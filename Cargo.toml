@@ -1,8 +1,15 @@
 [package]
+edition = "2018"
 name = "solfluid_backend"
 version = "0.1.0"
-edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+borsh = "0.9.1"
+borsh-derive = "0.9.1"
+rocket = {version = "0.5.0-rc.1", features = ["tls", "json"]}
+serde = {version = "1.0.104", features = ["derive"]}
+solana-client = "1.7.10"
+solana-program = "1.7.10"
+solana-sdk = "1.7.10"
