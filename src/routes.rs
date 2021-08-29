@@ -26,7 +26,7 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
         let deserialized_data: PaymentStreams =
             match BorshDeserialize::try_from_slice(program_account.data.borrow()) {
                 Ok(p) => p,
-                Err(e) => {
+                Err(_e) => {
                     continue;
                 }
             };
