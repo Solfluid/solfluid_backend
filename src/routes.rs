@@ -27,7 +27,6 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
             match BorshDeserialize::try_from_slice(program_account.data.borrow()) {
                 Ok(p) => p,
                 Err(e) => {
-                    println!("{}", e);
                     continue;
                 }
             };

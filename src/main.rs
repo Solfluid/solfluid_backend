@@ -1,4 +1,3 @@
-use rocket::{launch, routes};
 mod payment_stream;
 mod reciver_model;
 mod routes;
@@ -12,17 +11,27 @@ use routes::get_streams;
 use routes::index;
 mod stream_u8;
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build().mount(
-        "/",
-        routes![
-            index,
-            get_streams,
-            serialize_stream,
-            reciver_reward_serialize,
-            withdraw_serialize,
-            deserialize_stream
-        ],
-    )
+use rocket::routes;
+
+#[rocket::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let cors = rocket_cors::CorsOptions::default().to_cors()?;
+
+    rocket::build()
+        .mount(
+            "/",
+            routes![
+                index,
+                get_streams,
+                serialize_stream,
+                reciver_reward_serialize,
+                withdraw_serialize,
+                deserialize_stream
+            ],
+        )
+        .attach(cors)
+        .launch()
+        .await?;
+
+    Ok(())
 }
