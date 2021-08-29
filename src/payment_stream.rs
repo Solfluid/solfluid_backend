@@ -1,8 +1,9 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use rocket::serde::ser::{Serialize, SerializeStruct};
+use serde::Deserialize;
 use solana_program::{clock::UnixTimestamp, pubkey::Pubkey};
 
-#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+#[derive(Deserialize, BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct PaymentStreams {
     pub end_time: UnixTimestamp,
     pub start_time: UnixTimestamp,

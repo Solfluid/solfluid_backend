@@ -1,17 +1,19 @@
 use std::borrow::Borrow;
 
-use borsh::BorshDeserialize;
+use borsh::{BorshDeserialize, BorshSerialize};
 use rocket::{
-    get,
+    get, post,
     serde::json::{serde_json::json, Json, Value},
 };
 
-use crate::{payment_stream::PaymentStreams, solana::get_all_account};
+use crate::{
+    payment_stream::PaymentStreams, reciver_model::ReciverRewardPercentage,
+    solana::get_all_account, stream_u8::StreamU8, withdraw_model::WithdrawAmount,
+};
 
 #[get("/")]
-pub fn index() -> Json<Value> {
-    Json(json!({"code": 200,
-    "server": "hello nishant",}))
+pub fn index() -> &'static str {
+    "This server is here for data serialization and deserialization with borsh crate, And Beacause I hate javascript!!!"
 }
 
 #[get("/getallstream/<public_key>")]
@@ -37,5 +39,38 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
         }
     }
 
-    Json(json!({"code": 200,"public_key":public_key,"reciving":reciving,"sending":sending}))
+    Json(json!({"code": 200,"public_key":public_key,"reciving":reciving,"sending":sending,}))
+}
+
+#[post("/streamde", data = "<stream>")]
+pub fn deserialize_stream(stream: Json<StreamU8>) -> Json<Value> {
+    let temp = stream.0.data;
+    let payment_streams: PaymentStreams = match BorshDeserialize::try_from_slice(temp.borrow()) {
+        Ok(p) => p,
+        Err(_e) => {
+            return Json(json!({"code": 400,"error":"cantParse Invalid"}));
+        }
+    };
+    Json(json!({"code": 200,"result":payment_streams}))
+}
+
+#[post("/stream", data = "<stream>")]
+pub fn serialize_stream(stream: Json<PaymentStreams>) -> Json<Value> {
+    let temp = stream.0;
+    let res = temp.try_to_vec().unwrap();
+    Json(json!({"code": 200,"result":res}))
+}
+
+#[post("/reward", data = "<reward>")]
+pub fn reciver_reward_serialize(reward: Json<ReciverRewardPercentage>) -> Json<Value> {
+    let temp = reward.0;
+    let res = temp.try_to_vec().unwrap();
+    Json(json!({"code": 200,"result":res}))
+}
+
+#[post("/withdraw", data = "<withdraw>")]
+pub fn withdraw_serialize(withdraw: Json<WithdrawAmount>) -> Json<Value> {
+    let temp = withdraw.0;
+    let res = temp.try_to_vec().unwrap();
+    Json(json!({"code": 200,"result":res}))
 }
