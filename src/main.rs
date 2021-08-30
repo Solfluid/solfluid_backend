@@ -3,7 +3,7 @@ mod reciver_model;
 mod routes;
 mod solana;
 mod withdraw_model;
-use crate::routes::deserialize_stream;
+// use crate::routes::deserialize_stream;
 use crate::routes::reciver_reward_serialize;
 use crate::routes::serialize_stream;
 use crate::routes::withdraw_serialize;
@@ -26,7 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 serialize_stream,
                 reciver_reward_serialize,
                 withdraw_serialize,
-                deserialize_stream
+                // deserialize_stream
             ],
         )
         .attach(cors)

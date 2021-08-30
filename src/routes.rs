@@ -7,20 +7,23 @@ use rocket::{
 };
 
 use crate::{
-    payment_stream::PaymentStreams, reciver_model::ReciverRewardPercentage,
-    solana::get_all_account, stream_u8::StreamU8, withdraw_model::WithdrawAmount,
+    payment_stream::{PaymentStreamResponse, PaymentStreams},
+    reciver_model::ReciverRewardPercentage,
+    solana::get_all_account,
+    withdraw_model::WithdrawAmount,
 };
 
 #[get("/")]
 pub fn index() -> &'static str {
-    "This server is here for data serialization and deserialization with borsh crate, And Beacause I hate javascript!!!"
+    "This server is here for data serialization and deserialization with borsh crate, And Beacause I hate javascript!!!
+It Also act as a helper to get all active streams a public id is related to by parsing data from all program account : )"
 }
 
 #[get("/getallstream/<public_key>")]
 pub fn get_streams(public_key: &str) -> Json<Value> {
     let accounts = get_all_account();
-    let mut reciving: Vec<PaymentStreams> = Vec::new();
-    let mut sending: Vec<PaymentStreams> = Vec::new();
+    let mut reciving: Vec<PaymentStreamResponse> = Vec::new();
+    let mut sending: Vec<PaymentStreamResponse> = Vec::new();
     for acc in accounts {
         let program_account = acc.1;
         let deserialized_data: PaymentStreams =
@@ -32,26 +35,26 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
             };
 
         if deserialized_data.to.to_string().eq(public_key) {
-            reciving.push(deserialized_data);
+            reciving.push(PaymentStreamResponse::new(deserialized_data, &acc.0));
         } else if deserialized_data.from.to_string().eq(public_key) {
-            sending.push(deserialized_data)
+            sending.push(PaymentStreamResponse::new(deserialized_data, &acc.0))
         }
     }
 
     Json(json!({"code": 200,"public_key":public_key,"reciving":reciving,"sending":sending,}))
 }
 
-#[post("/streamde", data = "<stream>")]
-pub fn deserialize_stream(stream: Json<StreamU8>) -> Json<Value> {
-    let temp = stream.0.data;
-    let payment_streams: PaymentStreams = match BorshDeserialize::try_from_slice(temp.borrow()) {
-        Ok(p) => p,
-        Err(_e) => {
-            return Json(json!({"code": 400,"error":"cantParse Invalid"}));
-        }
-    };
-    Json(json!({"code": 200,"result":payment_streams}))
-}
+// #[post("/streamde", data = "<stream>")]
+// pub fn deserialize_stream(stream: Json<StreamU8>) -> Json<Value> {
+//     let temp = stream.0.data;
+//     let payment_streams: PaymentStreams = match BorshDeserialize::try_from_slice(temp.borrow()) {
+//         Ok(p) => p,
+//         Err(_e) => {
+//             return Json(json!({"code": 400,"error":"cantParse Invalid"}));
+//         }
+//     };
+//     Json(json!({"code": 200,"result":payment_streams}))
+// }
 
 #[post("/stream", data = "<stream>")]
 pub fn serialize_stream(stream: Json<PaymentStreams>) -> Json<Value> {
