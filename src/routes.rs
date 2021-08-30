@@ -1,17 +1,15 @@
-use std::borrow::Borrow;
-
-use borsh::{BorshDeserialize, BorshSerialize};
-use rocket::{
-    get, post,
-    serde::json::{serde_json::json, Json, Value},
-};
-
 use crate::{
     payment_stream::{PaymentStreamResponse, PaymentStreams},
     reciver_model::ReciverRewardPercentage,
     solana::get_all_account,
     withdraw_model::WithdrawAmount,
 };
+use borsh::BorshSerialize;
+use rocket::{
+    get, post,
+    serde::json::{serde_json::json, Json, Value},
+};
+use solana_sdk::borsh::try_from_slice_unchecked;
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -22,18 +20,19 @@ It Also act as a helper to get all active streams a public id is related to by p
 #[get("/getallstream/<public_key>")]
 pub fn get_streams(public_key: &str) -> Json<Value> {
     let accounts = get_all_account();
+    println!("{}", accounts.len());
     let mut reciving: Vec<PaymentStreamResponse> = Vec::new();
     let mut sending: Vec<PaymentStreamResponse> = Vec::new();
     for acc in accounts {
         let program_account = acc.1;
         let deserialized_data: PaymentStreams =
-            match BorshDeserialize::try_from_slice(program_account.data.borrow()) {
+            match try_from_slice_unchecked(&program_account.data) {
                 Ok(p) => p,
                 Err(_e) => {
+                    print!("{:?}", _e);
                     continue;
                 }
             };
-
         if deserialized_data.to.to_string().eq(public_key) {
             reciving.push(PaymentStreamResponse::new(deserialized_data, &acc.0));
         } else if deserialized_data.from.to_string().eq(public_key) {
