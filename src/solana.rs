@@ -8,7 +8,7 @@ pub fn get_all_account() -> Vec<(Pubkey, Account)> {
     let url = "https://api.devnet.solana.com".to_string();
     let client = RpcClient::new(url);
 
-    let pubkey = Pubkey::from_str("7ZRbUhE2WU57qXaGWZ9hJ6rqf1PvuGJT2LEzRwPvho1x").unwrap();
+    let pubkey = Pubkey::from_str("35onwr95TiPmRJLthsNsPuLXxuyDyz8krsZe5vHHVsFr").unwrap();
     let res = client.get_program_accounts(&pubkey).unwrap();
     res
 }

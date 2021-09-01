@@ -73,6 +73,7 @@ impl Serialize for PaymentStreamResponse {
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
+
         if self.is_active
             && since_the_epoch.as_secs() > (self.start_time as u64)
             && since_the_epoch.as_secs() < self.end_time as u64
