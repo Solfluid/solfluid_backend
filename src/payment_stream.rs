@@ -54,6 +54,10 @@ impl Serialize for PaymentStreamResponse {
         s.serialize_field("end_time", &self.end_time)?;
         s.serialize_field("start_time", &self.start_time)?;
         s.serialize_field("amount_second", &self.amount_second)?;
+        s.serialize_field(
+            "total_amount",
+            &((self.end_time - self.start_time) * self.amount_second),
+        )?;
         s.serialize_field("lamports_withdrawn", &self.lamports_withdrawn)?;
         s.serialize_field("is_active", &self.is_active)?;
         let to_string = &self.to.to_string();
