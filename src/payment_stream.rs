@@ -83,7 +83,7 @@ impl Serialize for PaymentStreamResponse {
             status_id = 1;
         }
         if (self.start_time as u64) > since_the_epoch.as_secs() {
-            status = "Starting Soon";
+            status = "Starting soon";
             status_id = 0;
         }
 
