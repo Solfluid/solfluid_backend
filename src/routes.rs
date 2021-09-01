@@ -1,7 +1,7 @@
 use crate::{
     payment_stream::{PaymentStreamResponse, PaymentStreams},
     reciver_model::ReciverRewardPercentage,
-    solana::get_all_account,
+    solana::{get_all_account, get_rent_exemption},
     withdraw_model::WithdrawAmount,
 };
 use borsh::BorshSerialize;
@@ -19,6 +19,7 @@ It Also act as a helper to get all active streams a public id is related to by p
 
 #[get("/getallstream/<public_key>")]
 pub fn get_streams(public_key: &str) -> Json<Value> {
+    let rent_exempt = get_rent_exemption();
     let accounts = get_all_account();
     println!("{}", accounts.len());
     let mut reciving: Vec<PaymentStreamResponse> = Vec::new();
@@ -34,9 +35,17 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
                 }
             };
         if deserialized_data.to.to_string().eq(public_key) {
-            reciving.push(PaymentStreamResponse::new(deserialized_data, &acc.0));
+            reciving.push(PaymentStreamResponse::new(
+                deserialized_data,
+                &acc.0,
+                (program_account.lamports - rent_exempt) as i64,
+            ));
         } else if deserialized_data.from.to_string().eq(public_key) {
-            sending.push(PaymentStreamResponse::new(deserialized_data, &acc.0))
+            sending.push(PaymentStreamResponse::new(
+                deserialized_data,
+                &acc.0,
+                (program_account.lamports - rent_exempt) as i64,
+            ))
         }
     }
 

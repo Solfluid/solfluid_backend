@@ -43,10 +43,13 @@ pub struct PaymentStreamResponse {
     pub lamports_withdrawn: i64,
     pub is_active: bool,
     pub id: Pubkey,
+    pub yeild_earned: i64,
 }
 
 impl PaymentStreamResponse {
-    pub fn new(stream: PaymentStreams, key: &Pubkey) -> Self {
+    pub fn new(stream: PaymentStreams, key: &Pubkey, balance: i64) -> Self {
+        let yeild_earned = balance - (stream.start_time - stream.end_time) * stream.amount_second;
+
         PaymentStreamResponse {
             end_time: stream.end_time,
             start_time: stream.start_time,
@@ -56,6 +59,7 @@ impl PaymentStreamResponse {
             id: *key,
             is_active: stream.is_active,
             lamports_withdrawn: stream.lamports_withdrawn,
+            yeild_earned,
         }
     }
 }
