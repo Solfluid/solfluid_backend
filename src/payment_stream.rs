@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use borsh::{BorshDeserialize, BorshSerialize};
 use rocket::serde::ser::{Serialize, SerializeStruct};
 use serde::Deserialize;
@@ -11,27 +13,6 @@ pub struct PaymentStreams {
     pub from: Pubkey,
     pub lamports_withdrawn: i64,
     pub is_active: bool,
-}
-
-impl Serialize for PaymentStreamResponse {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut s = serializer.serialize_struct("PaymentStream", 7)?;
-        s.serialize_field("end_time", &self.end_time)?;
-        s.serialize_field("start_time", &self.start_time)?;
-        s.serialize_field("amount_second", &self.amount_second)?;
-        s.serialize_field("lamports_withdrawn", &self.lamports_withdrawn)?;
-        s.serialize_field("is_active", &self.is_active)?;
-        let to_string = &self.to.to_string();
-        let from_string = &self.from.to_string();
-        let id_string = &self.id.to_string();
-        s.serialize_field("to", to_string)?;
-        s.serialize_field("from", from_string)?;
-        s.serialize_field("id", id_string)?;
-        s.end()
-    }
 }
 
 pub struct PaymentStreamResponse {
@@ -61,5 +42,39 @@ impl PaymentStreamResponse {
             lamports_withdrawn: stream.lamports_withdrawn,
             yeild_earned,
         }
+    }
+}
+
+impl Serialize for PaymentStreamResponse {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut s = serializer.serialize_struct("PaymentStream", 7)?;
+        s.serialize_field("end_time", &self.end_time)?;
+        s.serialize_field("start_time", &self.start_time)?;
+        s.serialize_field("amount_second", &self.amount_second)?;
+        s.serialize_field("lamports_withdrawn", &self.lamports_withdrawn)?;
+        s.serialize_field("is_active", &self.is_active)?;
+        let to_string = &self.to.to_string();
+        let from_string = &self.from.to_string();
+        let id_string = &self.id.to_string();
+        s.serialize_field("to", to_string)?;
+        s.serialize_field("from", from_string)?;
+        s.serialize_field("id", id_string)?;
+        s.serialize_field("yeildEarned", &self.yeild_earned)?;
+        let mut status = "Completed";
+        let start = SystemTime::now();
+        let since_the_epoch = start
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        if self.is_active && since_the_epoch.as_secs() > (self.start_time as u64) {
+            status = "Streaming";
+        }
+        if (self.start_time as u64) > since_the_epoch.as_secs() {
+            status = "Starting Soon";
+        }
+        s.serialize_field("status", status)?;
+        s.end()
     }
 }
