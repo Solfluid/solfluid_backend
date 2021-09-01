@@ -21,7 +21,6 @@ It Also act as a helper to get all active streams a public id is related to by p
 pub fn get_streams(public_key: &str) -> Json<Value> {
     let rent_exempt = get_rent_exemption();
     let accounts = get_all_account();
-    println!("{}", accounts.len());
     let mut reciving: Vec<PaymentStreamResponse> = Vec::new();
     let mut sending: Vec<PaymentStreamResponse> = Vec::new();
     for acc in accounts {

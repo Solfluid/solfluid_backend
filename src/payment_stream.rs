@@ -29,7 +29,7 @@ pub struct PaymentStreamResponse {
 
 impl PaymentStreamResponse {
     pub fn new(stream: PaymentStreams, key: &Pubkey, balance: i64) -> Self {
-        let yeild_earned = balance - (stream.start_time - stream.end_time) * stream.amount_second;
+        let yeild_earned = balance - ((stream.start_time - stream.end_time) * stream.amount_second);
 
         PaymentStreamResponse {
             end_time: stream.end_time,
@@ -68,17 +68,25 @@ impl Serialize for PaymentStreamResponse {
         s.serialize_field("id", id_string)?;
         s.serialize_field("yeildEarned", &self.yeild_earned)?;
         let mut status = "Completed";
+        let mut status_id = 3;
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
-        if self.is_active && since_the_epoch.as_secs() > (self.start_time as u64) {
+        if self.is_active
+            && since_the_epoch.as_secs() > (self.start_time as u64)
+            && since_the_epoch.as_secs() < self.end_time as u64
+        {
             status = "Streaming";
+            status_id = 1;
         }
         if (self.start_time as u64) > since_the_epoch.as_secs() {
             status = "Starting Soon";
+            status_id = 0;
         }
+
         s.serialize_field("status", status)?;
+        s.serialize_field("statusID", &status_id)?;
         s.end()
     }
 }
