@@ -29,7 +29,8 @@ pub struct PaymentStreamResponse {
 
 impl PaymentStreamResponse {
     pub fn new(stream: PaymentStreams, key: &Pubkey, balance: i64) -> Self {
-        let yeild_earned = balance - ((stream.start_time - stream.end_time) * stream.amount_second);
+        let yeild_earned = balance + stream.lamports_withdrawn
+            - ((stream.end_time - stream.start_time) * stream.amount_second);
 
         PaymentStreamResponse {
             end_time: stream.end_time,
