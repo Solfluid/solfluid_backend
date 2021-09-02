@@ -20,7 +20,7 @@ It Also act as a helper to get all active streams a public id is related to by p
 pub fn get_streams(public_key: &str) -> Json<Value> {
     let rent_exempt = get_rent_exemption();
     let accounts = get_all_account();
-    let mut reciving: Vec<PaymentStreamResponse> = Vec::new();
+    let mut receiving: Vec<PaymentStreamResponse> = Vec::new();
     let mut sending: Vec<PaymentStreamResponse> = Vec::new();
     for acc in accounts {
         let program_account = acc.1;
@@ -33,7 +33,7 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
                 }
             };
         if deserialized_data.to.to_string().eq(public_key) {
-            reciving.push(PaymentStreamResponse::new(
+            receiving.push(PaymentStreamResponse::new(
                 deserialized_data,
                 &acc.0,
                 (program_account.lamports - rent_exempt) as i64,
@@ -47,7 +47,7 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
         }
     }
 
-    Json(json!({"code": 200,"public_key":public_key,"reciving":reciving,"sending":sending,}))
+    Json(json!({"code": 200,"public_key":public_key,"receiving":receiving,"sending":sending,}))
 }
 
 #[post("/stream", data = "<stream>")]
