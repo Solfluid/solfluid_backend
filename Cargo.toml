@@ -9,8 +9,9 @@ version = "0.1.0"
 borsh = "0.9.1"
 borsh-derive = "0.9.1"
 rocket = {version = "0.5.0-rc.1", features = ["tls", "json"]}
+rocket_cors = {git = "https://github.com/lawliet89/rocket_cors", branch = "master"}
 serde = {version = "1.0.104", features = ["derive"]}
 solana-client = "1.7.10"
 solana-program = "1.7.10"
 solana-sdk = "1.7.10"
-rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
+solana-stake-o-matic = "1.6.21"
