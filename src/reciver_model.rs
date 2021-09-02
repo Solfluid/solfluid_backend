@@ -1,7 +1,7 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
 use serde::{Deserialize, Serialize};
 
-#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, Deserialize, Serialize)]
+#[derive(BorshSerialize, BorshSchema, BorshDeserialize, Debug, Clone, Deserialize, Serialize)]
 pub struct ReciverRewardPercentage {
     pub percentage: u8,
 }

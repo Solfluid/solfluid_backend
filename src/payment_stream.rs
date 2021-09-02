@@ -1,10 +1,10 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use borsh::{BorshDeserialize, BorshSerialize};
+use borsh::{BorshDeserialize, BorshSchema,BorshSerialize};
 use rocket::serde::ser::{Serialize, SerializeStruct};
 use serde::Deserialize;
 use solana_program::{clock::UnixTimestamp, pubkey::Pubkey};
-#[derive(Deserialize, BorshSerialize, BorshDeserialize, Debug, Clone)]
+#[derive(Deserialize,BorshSchema, BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct PaymentStreams {
     pub end_time: UnixTimestamp,
     pub start_time: UnixTimestamp,

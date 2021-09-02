@@ -4,12 +4,11 @@ use crate::{
     solana::{get_all_account, get_rent_exemption},
     withdraw_model::WithdrawAmount,
 };
-use borsh::BorshSerialize;
+use borsh::{try_from_slice_with_schema, try_to_vec_with_schema};
 use rocket::{
     get, post,
     serde::json::{serde_json::json, Json, Value},
 };
-use solana_sdk::borsh::try_from_slice_unchecked;
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -25,8 +24,8 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
     let mut sending: Vec<PaymentStreamResponse> = Vec::new();
     for acc in accounts {
         let program_account = acc.1;
-        let deserialized_data: PaymentStreams =
-            match try_from_slice_unchecked(&program_account.data) {
+        let deserialized_data =
+            match try_from_slice_with_schema::<PaymentStreams>(&program_account.data) {
                 Ok(p) => p,
                 Err(_e) => {
                     print!("{:?}", _e);
@@ -51,35 +50,38 @@ pub fn get_streams(public_key: &str) -> Json<Value> {
     Json(json!({"code": 200,"public_key":public_key,"reciving":reciving,"sending":sending,}))
 }
 
-// #[post("/streamde", data = "<stream>")]
-// pub fn deserialize_stream(stream: Json<StreamU8>) -> Json<Value> {
-//     let temp = stream.0.data;
-//     let payment_streams: PaymentStreams = match BorshDeserialize::try_from_slice(temp.borrow()) {
-//         Ok(p) => p,
-//         Err(_e) => {
-//             return Json(json!({"code": 400,"error":"cantParse Invalid"}));
-//         }
-//     };
-//     Json(json!({"code": 200,"result":payment_streams}))
-// }
-
 #[post("/stream", data = "<stream>")]
 pub fn serialize_stream(stream: Json<PaymentStreams>) -> Json<Value> {
     let temp = stream.0;
-    let res = temp.try_to_vec().unwrap();
+    let res = match try_to_vec_with_schema(&temp) {
+        Ok(x) => x,
+        Err(e) => {
+            return Json(json!({"code": 500,"error":format!("{:?}",e)}));
+        }
+    };
     Json(json!({"code": 200,"result":res}))
 }
 
 #[post("/reward", data = "<reward>")]
 pub fn reciver_reward_serialize(reward: Json<ReciverRewardPercentage>) -> Json<Value> {
     let temp = reward.0;
-    let res = temp.try_to_vec().unwrap();
+    let res = match try_to_vec_with_schema(&temp) {
+        Ok(x) => x,
+        Err(e) => {
+            return Json(json!({"code": 500,"error":format!("{:?}",e)}));
+        }
+    };
     Json(json!({"code": 200,"result":res}))
 }
 
 #[post("/withdraw", data = "<withdraw>")]
 pub fn withdraw_serialize(withdraw: Json<WithdrawAmount>) -> Json<Value> {
     let temp = withdraw.0;
-    let res = temp.try_to_vec().unwrap();
+    let res = match try_to_vec_with_schema(&temp) {
+        Ok(x) => x,
+        Err(e) => {
+            return Json(json!({"code": 500,"error":format!("{:?}",e)}));
+        }
+    };
     Json(json!({"code": 200,"result":res}))
 }
