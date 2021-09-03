@@ -17,7 +17,7 @@ pub fn get_all_account_yeild() -> Vec<(Pubkey, Account)> {
     let url = "https://api.devnet.solana.com".to_string();
     let client = RpcClient::new(url);
 
-    let pubkey = Pubkey::from_str("2F2XupZErDDHKniN4nkEHGsf7j7c7egmMHzVrhWpfXi2").unwrap();
+    let pubkey = Pubkey::from_str("9hrC9f71VZA2cxwTTtXGteHdmg99QqhdimvbqvFc297C").unwrap();
     let res = client.get_program_accounts(&pubkey).unwrap();
     res
 }
