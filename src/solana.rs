@@ -12,15 +12,16 @@ pub fn get_all_account() -> Vec<(Pubkey, Account)> {
     let res = client.get_program_accounts(&pubkey).unwrap();
     res
 }
-
+#[warn(dead_code)]
 pub fn get_all_account_yeild() -> Vec<(Pubkey, Account)> {
     let url = "https://api.devnet.solana.com".to_string();
     let client = RpcClient::new(url);
 
-    let pubkey = Pubkey::from_str("9hrC9f71VZA2cxwTTtXGteHdmg99QqhdimvbqvFc297C").unwrap();
+    let pubkey = Pubkey::from_str("AZzGpBGZ2bXdh8AV2xhTw8g5HEGhkXteswh77LWXG7JJ").unwrap();
     let res = client.get_program_accounts(&pubkey).unwrap();
     res
 }
+#[warn(dead_code)]
 pub fn get_rent_exemption_yield() -> u64 {
     let url = "https://api.devnet.solana.com".to_string();
     let client = RpcClient::new(url);
