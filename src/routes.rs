@@ -12,8 +12,7 @@ use rocket::{
 
 #[get("/")]
 pub fn index() -> &'static str {
-    "This server is here for data serialization and deserialization with borsh crate, And Beacause I hate javascript!!!
-It Also act as a helper to get all active streams a public id is related to by parsing data from all program account : )"
+    ": )"
 }
 
 #[get("/getallstream/<public_key>")]
